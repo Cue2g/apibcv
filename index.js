@@ -9,11 +9,11 @@ app.get('/api/bcv', async function (req, res) {
             uri: 'http://www.bcv.org.ve/',
             transform: body => cheerio.load(body)
         });
-        const euro = $('#euro').find('strong').html()
-        const yuan = $('#yuan').find('strong').html()
-        const lira = $('#lira').find('strong').html()
-        const rublo = $('#rublo').find('strong').html()
-        const dolar = $('#dolar').find('strong').html()
+        const euro = Number($('#euro').find('strong').html().replace(',', '.'))
+        const yuan = Number($('#yuan').find('strong').html().replace(',', '.'))
+        const lira = Number($('#lira').find('strong').html().replace(',', '.'))
+        const rublo = Number($('#rublo').find('strong').html().replace(',', '.'))
+        const dolar = Number($('#dolar').find('strong').html().replace(',', '.'))
         res.status(200).json({
             estado:200,
             data: {
