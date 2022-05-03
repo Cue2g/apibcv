@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const cheerio = require('cheerio');
 const request = require('request-promise')
+const cors = require('cors')
+app.use(cors()) 
 
 app.get('/api/bcv', async function (req, res) {
     try {
