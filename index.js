@@ -3,9 +3,10 @@ const app = express()
 const cheerio = require('cheerio');
 const request = require('request-promise')
 const cors = require('cors')
-app.use(cors()) 
+app.use(cors())
 
-app.get('/api/bcv', async function (req, res) {
+app.get('/api/bcv', cors(), async function (req, res) {
+    console.log('Request')
     try {
         const $ = await request({
             uri: 'http://www.bcv.org.ve/',
@@ -17,7 +18,6 @@ app.get('/api/bcv', async function (req, res) {
         const rublo = Number($('#rublo').find('strong').html().replace(',', '.'))
         const dolar = Number($('#dolar').find('strong').html().replace(',', '.'))
         res.status(200).json({
-            estado:200,
             data: {
                 euro,
                 yuan,
