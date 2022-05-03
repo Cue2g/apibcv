@@ -1,30 +1,40 @@
 const express = require('express')
 const app = express()
-const cheerio = require('cheerio');
-const request = require('request-promise')
-const cors = require('cors')
-app.use(cors())
+const Bcv = require('./jobs/schema')
+const mongoose = require('mongoose')
+// const cors = require('cors')
+require('dotenv').config()
 
-app.get('/api/bcv', cors(), async function (req, res) {
+const userbd = process.env.userbd,
+pwbd = process.env.pwbd,
+bdName = process.env.bdname;
+const uri = `mongodb+srv://${userbd}:${pwbd}@cluster0.4qxcs.mongodb.net/${bdName}?retryWrites=true&w=majority`;
+mongoose.connect(uri)
+
+app.get('/api/bcv', async function (req, res) {
     console.log('Request')
     try {
-        const $ = await request({
-            uri: 'http://www.bcv.org.ve/',
-            transform: body => cheerio.load(body)
-        });
-        const euro = Number($('#euro').find('strong').html().replace(',', '.'))
-        const yuan = Number($('#yuan').find('strong').html().replace(',', '.'))
-        const lira = Number($('#lira').find('strong').html().replace(',', '.'))
-        const rublo = Number($('#rublo').find('strong').html().replace(',', '.'))
-        const dolar = Number($('#dolar').find('strong').html().replace(',', '.'))
+      const BcvModel = mongoose.model('registers', Bcv)
+      const doc = await BcvModel.find().sort({$natural:-1}).limit(1).select({_id:0, __v:0})
         res.status(200).json({
-            data: {
-                euro,
-                yuan,
-                lira,
-                rublo,
-                dolar
-            }
+            status: "ok",
+            data: doc[0]
+        })
+    } catch (error) {
+        res.status(400).json({
+            estado:400,
+            error
+        })
+    }
+})
+
+app.get('/api/bcv/dolar', async function (req, res) {
+    try {
+      const BcvModel = mongoose.model('registers', Bcv)
+      const doc = await BcvModel.find().sort({$natural:-1}).limit(1).select({_id:0,dolar:1,fecha:1})
+        res.status(200).json({
+            status: "ok",
+            data: doc[0]
         })
     } catch (error) {
         res.status(400).json({
