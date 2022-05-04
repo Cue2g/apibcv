@@ -2,11 +2,12 @@ const cheerio = require('cheerio');
 const request = require('request-promise')
 const bd = require('./mongo')
 const Bcv = require('./schema')
-
+const cron = require('node-cron');
+console.log(`inicio del servicio: ${Date.now()}`)
 async function updateData() {
   const conn = await bd.bdConnection()
   try {
-    
+
       const $ = await request({
           uri: 'http://www.bcv.org.ve/',
           transform: body => cheerio.load(body)
@@ -36,4 +37,12 @@ async function updateData() {
   }
 }
 
-updateData()
+cron.schedule('0 8 * * *', () => {
+  console.log('running updateData');
+  updateData()
+});
+
+cron.schedule('0 16 * * *', () => {
+  console.log('running updateData');
+  updateData()
+});
